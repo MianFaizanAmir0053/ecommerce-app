@@ -95,6 +95,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
       />
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
+        <Heading title={title} description={description} />
 
         {initialData && (
           <Button
