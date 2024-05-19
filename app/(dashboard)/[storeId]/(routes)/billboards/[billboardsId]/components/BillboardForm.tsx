@@ -2,7 +2,6 @@
 
 import AlertModal from "@/components/modals/AlertModal";
 import Heading from "@/components/ui/Heading";
-import ApiAlert from "@/components/ui/api-alert";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,6 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import ImageUpload from "@/components/ui/image-upload";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useOrigin } from "@/hooks/use-origin";
@@ -64,9 +64,19 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const onSubmit = async (data: BillboardFormValues) => {
     try {
       setLoading(true);
-      await axios.patch(`/api/stores/${params.storeId}`, data);
+      if (initialData) {
+        const res = await axios.patch(
+          `/api/${params.storeId}/billboards/${params.billboardsId}`,
+          data
+        );
+        console.log(res.data);
+      } else {
+        const res = await axios.post(`/api/${params.storeId}/billboards`, data);
+        console.log(res.data);
+      }
       router.refresh();
-      toast.success("Store updated successfully");
+      toast.success(toastMessage);
+      router.push(`/${params.storeId}/billboards`);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -74,23 +84,29 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
     }
   };
 
+  const onDelete = async (data: BillboardFormValues) => {
+    try {
+      setLoading(true);
+      if (initialData) {
+        await axios.delete(
+          `/api/${params.storeId}/billboards/${params.billboardsId}`
+        );
+      }
+      router.refresh();
+      toast.success("Billboard delete successfully");
+      router.push(`/${params.storeId}/billboards`);
+    } catch (error) {
+      toast.error("Make sure to remove all categories from the billboard");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
-        onConfirm={() => {
-          try {
-            setLoading(true);
-            axios.delete(`/api/stores/${params.storeId}`);
-          } catch (error) {
-            toast.error("Something went wrong");
-          } finally {
-            toast.success("Store deleted successfully");
-            setLoading(false);
-            router.push("/dashboard");
-          }
-        }}
+        onConfirm={() => onDelete(BillboardForm.getValues())}
         loading={Loading}
       />
       <div className="flex items-center justify-between">
@@ -111,6 +127,25 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
         <form
           onSubmit={BillboardForm.handleSubmit(onSubmit)}
           className="space-y-8 w-full">
+          <FormField
+            name="imageUrl"
+            control={BillboardForm.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Background Image</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    value={field.value ? [field.value] : []}
+                    onChange={(value) => field.onChange(value)}
+                    onRemove={() => field.onChange("")}
+                    disabled={Loading}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="grid grid-cols-3 gap-8">
             <FormField
               name="label"
@@ -135,6 +170,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           </Button>
         </form>
       </Form>
+
       {/* <ApiAlert
         title="NEXT_PUBLIC_API_URL"
         description={`${origin}/api/${params.storeId}`}

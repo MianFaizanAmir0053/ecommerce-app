@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import Modal from "../ui/Modal";
 import { Button } from "../ui/button";
 
@@ -17,18 +17,16 @@ const AlertModal: FC<AlertModalProps> = ({
 }) => {
   return (
     <Modal
-      description="Are you sure you want to delete the store"
+      description="This action cannot be undone."
       isOpen={isOpen}
-      title="Delete Modal"
-      onClose={onClose}
-    >
+      title="Are you sure?"
+      onClose={onClose}>
       <div className="flex justify-end">
         <Button
           variant="ghost"
           className="mr-2"
           onClick={onClose}
-          disabled={loading}
-        >
+          disabled={loading}>
           Cancel
         </Button>
         <Button onClick={onConfirm} variant={"destructive"} disabled={loading}>

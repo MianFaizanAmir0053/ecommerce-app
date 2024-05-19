@@ -58,6 +58,21 @@ const SettingForm = ({ initialData }: SettingFormProps) => {
       setLoading(false);
     }
   };
+
+  const onDelete = async (data: SettingFormValues) => {
+    try {
+      setLoading(true);
+      await axios.delete(`/api/stores/${params.storeId}`);
+      router.refresh();
+      toast.success("Store delete successfully");
+    } catch (error) {
+      toast.error(
+        "Make sure you have no products and categories in your store"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
   const origin = useOrigin();
 
   return (
@@ -65,18 +80,7 @@ const SettingForm = ({ initialData }: SettingFormProps) => {
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
-        onConfirm={() => {
-          try {
-            setLoading(true);
-            axios.delete(`/api/stores/${params.storeId}`);
-          } catch (error) {
-            toast.error("Something went wrong");
-          } finally {
-            toast.success("Store deleted successfully");
-            setLoading(false);
-            router.push("/dashboard");
-          }
-        }}
+        onConfirm={() => onDelete(SettingForm.getValues())}
         loading={Loading}
       />
       <div className="flex items-center justify-between">
@@ -118,6 +122,7 @@ const SettingForm = ({ initialData }: SettingFormProps) => {
           </Button>
         </form>
       </Form>
+      <Separator />
       <ApiAlert
         title="NEXT_PUBLIC_API_URL"
         description={`${origin}/api/${params.storeId}`}

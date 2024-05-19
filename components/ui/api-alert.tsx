@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 import { Badge, BadgeProps } from "./badge";
-import { Separator } from "./separator";
 
 type ApiAlertProps = {
   title: string;
@@ -32,7 +31,6 @@ const ApiAlert: React.FC<ApiAlertProps> = ({ description, title, variant }) => {
 
   return (
     <div>
-      <Separator />
       <Alert className="my-4">
         <Server className="h-4 w-4" />
         <div className="flex space-x-2 text-sm items-center">
